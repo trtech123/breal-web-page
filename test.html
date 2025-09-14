@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BReal Web Page Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-link { display: block; margin: 10px 0; padding: 10px; background: #f0f0f0; text-decoration: none; border-radius: 5px; }
+        .test-link:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+    <h1>BReal Web Page Test Links</h1>
+    <p>Click these links to test different scenarios:</p>
+
+    <a href="./property/123" class="test-link">
+        🏠 Basic Property Link (ID: 123)
+    </a>
+
+    <a href="./property/456?action=manage" class="test-link">
+        ⚙️ Property with Management Action (ID: 456)
+    </a>
+
+    <a href="./property/789?action=view&lang=en" class="test-link">
+        🇺🇸 Property in English (ID: 789)
+    </a>
+
+    <a href="./property/101?lang=he" class="test-link">
+        🇮🇱 Property in Hebrew (ID: 101)
+    </a>
+
+    <a href="./property/202?env=testflight" class="test-link">
+        🧪 TestFlight Environment (ID: 202)
+    </a>
+
+    <h2>How it works:</h2>
+    <ul>
+        <li>✅ Extracts property ID from URL (/property/123)</li>
+        <li>✅ Checks for action parameter (?action=manage)</li>
+        <li>✅ Detects device type (iOS/Android/Desktop)</li>
+        <li>✅ Redirects to external app link builder</li>
+        <li>✅ Falls back to external store link builder</li>
+        <li>✅ Shows manual options if auto-redirect fails</li>
+        <li>✅ Supports Hebrew/English based on URL or browser</li>
+        <li>✅ Mobile responsive design</li>
+    </ul>
+
+    <h2>External Link Structure:</h2>
+    <p><strong>App Link:</strong> Current URL with /property/ → /app/property/</p>
+    <p><strong>Store Link:</strong> Current URL with /property/ → /store/</p>
+</body>
+</html>

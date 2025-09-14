@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BReal - פותח את האפליקציה</title>
+    <meta name="description" content="BReal - אפליקציית נדל"ן מתקדמת">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .fallback-options {
+            display: none;
+        }
+
+        .fallback-options.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            border-radius: 15px;
+            color: white;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        [dir="ltr"] .lang-toggle {
+            right: auto;
+            left: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .button {
+                display: block;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="lang-toggle" onclick="toggleLanguage()">English</button>
+
+    <div class="container">
+        <div class="logo">BReal</div>
+
+        <div class="spinner"></div>
+
+        <div class="status" id="status">
+            <span class="he">פותח את האפליקציה...</span>
+            <span class="en hidden">Opening app...</span>
+        </div>
+
+        <div class="fallback-options" id="fallback">
+            <p class="he">האפליקציה לא נפתחה אוטומטית?</p>
+            <p class="en hidden">App didn't open automatically?</p>
+
+            <a href="#" class="button" id="manual-open" onclick="redirectToApp()">
+                <span class="he">לחץ כאן לפתיחת האפליקציה</span>
+                <span class="en hidden">Click here to open app</span>
+            </a>
+
+            <a href="#" class="button" id="download-link">
+                <span class="he">הורד את האפליקציה</span>
+                <span class="en hidden">Download App</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        class PropertyLauncher {
+            constructor() {
+                this.propertyId = this.getPropertyIdFromUrl();
+                this.action = this.getActionFromUrl();
+                this.device = this.detectDevice();
+                this.language = this.detectLanguage();
+                this.appLink = this.buildAppLink();
+                this.storeLink = this.buildStoreLink();
+
+                this.init();
+            }
+
+            getPropertyIdFromUrl() {
+                const path = window.location.pathname;
+                const match = path.match(/\/property\/(\d+)/);
+                return match ? match[1] : null;
+            }
+
+            getActionFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('action') || '';
+            }
+
+            detectDevice() {
+                const ua = navigator.userAgent;
+                if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+                if (/Android/.test(ua)) return 'android';
+                return 'desktop';
+            }
+
+            detectLanguage() {
+                const params = new URLSearchParams(window.location.search);
+                const langParam = params.get('lang');
+                if (langParam) return langParam;
+
+                const browserLang = navigator.language || navigator.userLanguage;
+                return browserLang.startsWith('he') ? 'he' : 'en';
+            }
+
+            buildAppLink() {
+                const currentUrl = new URL(window.location);
+                currentUrl.pathname = currentUrl.pathname.replace('/property/', '/app/property/');
+                return currentUrl.toString();
+            }
+
+            buildStoreLink() {
+                const currentUrl = new URL(window.location);
+                currentUrl.pathname = currentUrl.pathname.replace('/property/', '/store/');
+                return currentUrl.toString();
+            }
+
+            async attemptAppLaunch() {
+                if (this.device === 'desktop') {
+                    this.showFallback();
+                    return;
+                }
+
+                try {
+                    const startTime = Date.now();
+
+                    window.location.href = this.appLink;
+
+                    setTimeout(() => {
+                        const timeSpent = Date.now() - startTime;
+                        if (timeSpent < 2500 && document.hidden === false) {
+                            this.showFallback();
+                        }
+                    }, 2000);
+
+                    setTimeout(() => {
+                        if (document.hidden === false) {
+                            window.location.href = this.storeLink;
+                        }
+                    }, 3000);
+
+                } catch (error) {
+                    console.error('App launch failed:', error);
+                    this.showFallback();
+                }
+            }
+
+            showFallback() {
+                document.querySelector('.spinner').style.display = 'none';
+                document.getElementById('status').innerHTML = this.language === 'he'
+                    ? 'האפליקציה לא נפתחה אוטומטית?'
+                    : 'App didn\'t open automatically?';
+                document.getElementById('fallback').classList.add('show');
+
+                document.getElementById('manual-open').href = this.appLink;
+                document.getElementById('download-link').href = this.storeLink;
+            }
+
+            init() {
+                this.setLanguage(this.language);
+
+                if (!this.propertyId) {
+                    document.getElementById('status').innerHTML = this.language === 'he'
+                        ? 'מזהה נכס לא נמצא'
+                        : 'Property ID not found';
+                    this.showFallback();
+                    return;
+                }
+
+                setTimeout(() => this.attemptAppLaunch(), 500);
+            }
+
+            setLanguage(lang) {
+                document.documentElement.lang = lang;
+                document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+
+                document.querySelectorAll('.he').forEach(el => {
+                    el.classList.toggle('hidden', lang !== 'he');
+                });
+
+                document.querySelectorAll('.en').forEach(el => {
+                    el.classList.toggle('hidden', lang !== 'en');
+                });
+
+                document.querySelector('.lang-toggle').textContent = lang === 'he' ? 'English' : 'עברית';
+
+                this.language = lang;
+            }
+        }
+
+        function toggleLanguage() {
+            const currentLang = launcher.language;
+            const newLang = currentLang === 'he' ? 'en' : 'he';
+            launcher.setLanguage(newLang);
+
+            const params = new URLSearchParams(window.location.search);
+            params.set('lang', newLang);
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function redirectToApp() {
+            window.location.href = launcher.appLink;
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                setTimeout(() => {
+                    if (!document.hidden) {
+                        document.querySelector('.spinner').style.display = 'none';
+                        launcher.showFallback();
+                    }
+                }, 1000);
+            }
+        });
+
+        const launcher = new PropertyLauncher();
+    </script>
+
+    <noscript>
+        <div style="text-align: center; padding: 2rem;">
+            <h1>BReal</h1>
+            <p>JavaScript is required for automatic app launching.</p>
+            <p>Please enable JavaScript or contact support.</p>
+        </div>
+    </noscript>
+</body>
+</html>
