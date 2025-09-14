@@ -174,7 +174,7 @@
 
             getPropertyIdFromUrl() {
                 const path = window.location.pathname;
-                const match = path.match(/\/property\/(\d+)/);
+                const match = path.match(/\/property\/([a-zA-Z0-9-]+)/);
                 return match ? match[1] : null;
             }
 
@@ -200,15 +200,34 @@
             }
 
             buildAppLink() {
-                const currentUrl = new URL(window.location);
-                currentUrl.pathname = currentUrl.pathname.replace('/property/', '/app/property/');
-                return currentUrl.toString();
+                let deepLink = 'breal://property';
+                const params = [];
+
+                if (this.propertyId) {
+                    params.push(`id=${this.propertyId}`);
+                }
+
+                if (this.action) {
+                    params.push(`action=${this.action}`);
+                }
+
+                if (params.length > 0) {
+                    deepLink += '?' + params.join('&');
+                }
+
+                return deepLink;
             }
 
             buildStoreLink() {
-                const currentUrl = new URL(window.location);
-                currentUrl.pathname = currentUrl.pathname.replace('/property/', '/store/');
-                return currentUrl.toString();
+                if (this.device === 'ios') {
+                    // Replace with your actual App Store ID
+                    return 'https://apps.apple.com/app/breal/id123456789';
+                } else if (this.device === 'android') {
+                    // Replace with your actual package name
+                    return 'https://play.google.com/store/apps/details?id=com.breal.app';
+                }
+                // Fallback for desktop or unknown devices
+                return 'https://breal.com/download';
             }
 
             async attemptAppLaunch() {
