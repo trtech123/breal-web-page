@@ -164,6 +164,7 @@
             constructor() {
                 this.propertyId = this.getPropertyIdFromUrl();
                 this.action = this.getActionFromUrl();
+                this.env = this.getEnvFromUrl();
                 this.device = this.detectDevice();
                 this.language = this.detectLanguage();
                 this.appLink = this.buildAppLink();
@@ -183,6 +184,11 @@
                 return params.get('action') || '';
             }
 
+            getEnvFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('env') || 'prod';
+            }
+
             detectDevice() {
                 const ua = navigator.userAgent;
                 if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
@@ -200,7 +206,8 @@
             }
 
             buildAppLink() {
-                let deepLink = 'breal://property';
+                const scheme = this.env === 'dev' ? 'expo' : 'breal';
+                let deepLink = `${scheme}://property`;
                 const params = [];
 
                 if (this.propertyId) {
