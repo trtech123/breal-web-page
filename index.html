@@ -206,23 +206,43 @@
             }
 
             buildAppLink() {
-                const scheme = this.env === 'dev' ? 'expo' : 'breal';
-                let deepLink = `${scheme}://property`;
-                const params = [];
+                if (this.env === 'dev') {
+                    // For Expo Go development
+                    let deepLink = 'exp://localhost:8081/--/property';
+                    const params = [];
 
-                if (this.propertyId) {
-                    params.push(`id=${this.propertyId}`);
+                    if (this.propertyId) {
+                        params.push(`id=${this.propertyId}`);
+                    }
+
+                    if (this.action) {
+                        params.push(`action=${this.action}`);
+                    }
+
+                    if (params.length > 0) {
+                        deepLink += '?' + params.join('&');
+                    }
+
+                    return deepLink;
+                } else {
+                    // Production uses breal:// scheme
+                    let deepLink = 'breal://property';
+                    const params = [];
+
+                    if (this.propertyId) {
+                        params.push(`id=${this.propertyId}`);
+                    }
+
+                    if (this.action) {
+                        params.push(`action=${this.action}`);
+                    }
+
+                    if (params.length > 0) {
+                        deepLink += '?' + params.join('&');
+                    }
+
+                    return deepLink;
                 }
-
-                if (this.action) {
-                    params.push(`action=${this.action}`);
-                }
-
-                if (params.length > 0) {
-                    deepLink += '?' + params.join('&');
-                }
-
-                return deepLink;
             }
 
             buildStoreLink() {
