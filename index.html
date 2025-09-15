@@ -206,7 +206,7 @@
             }
 
             buildAppLink() {
-                if (this.env === 'dev') {
+                if (this.env === 'dev' || this.env === 'expo') {
                     // For Expo Go development - using Expo direct URL
                     let deepLink = 'exp://d5qqt6e-trtech1337-8081.exp.direct/--/property';
                     const params = [];
